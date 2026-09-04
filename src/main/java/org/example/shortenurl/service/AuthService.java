@@ -5,13 +5,13 @@ import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.example.shortenurl.dtos.AuthRequest;
 import org.example.shortenurl.dtos.LoginResponse;
+import org.example.shortenurl.exception.ApiException;
 import org.example.shortenurl.model.User;
 import org.example.shortenurl.repository.UserRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,15 +57,15 @@ public class AuthService {
         return jwtService.generateToken(user);
     }
 
-    private ResponseStatusException emailAlreadyExists() {
-        return new ResponseStatusException(
+    private ApiException emailAlreadyExists() {
+        return new ApiException(
                 HttpStatus.CONFLICT,
                 "Email already exists"
         );
     }
 
-    private ResponseStatusException invalidCredentials() {
-        return new ResponseStatusException(
+    private ApiException invalidCredentials() {
+        return new ApiException(
                 HttpStatus.UNAUTHORIZED,
                 "Invalid email or password"
         );

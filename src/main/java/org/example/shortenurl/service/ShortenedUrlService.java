@@ -5,12 +5,12 @@ import java.security.SecureRandom;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.example.shortenurl.exception.ApiException;
 import org.example.shortenurl.model.ShortenedUrl;
 import org.example.shortenurl.repository.ShortenedUrlRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class ShortenedUrlService {
             }
         }
 
-        throw new ResponseStatusException(
+        throw new ApiException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Unable to generate short URL"
         );
@@ -57,7 +57,7 @@ public class ShortenedUrlService {
         return shortenedUrlRepository.findByShortCode(shortCode)
                 .map(ShortenedUrl::originalUrl)
                 .map(URI::create)
-                .orElseThrow(() -> new ResponseStatusException(
+                .orElseThrow(() -> new ApiException(
                         HttpStatus.NOT_FOUND,
                         "Short URL not found"
                 ));
@@ -69,7 +69,7 @@ public class ShortenedUrlService {
 
     public void delete(Long id, Long userId) {
         if (shortenedUrlRepository.deleteByIdAndUserId(id, userId) == 0) {
-            throw new ResponseStatusException(
+            throw new ApiException(
                     HttpStatus.NOT_FOUND,
                     "Short URL not found"
             );
@@ -100,8 +100,8 @@ public class ShortenedUrlService {
         return shortCode.toString();
     }
 
-    private ResponseStatusException invalidUrl() {
-        return new ResponseStatusException(
+    private ApiException invalidUrl() {
+        return new ApiException(
                 HttpStatus.BAD_REQUEST,
                 "original_url must be a valid HTTP or HTTPS URL"
         );
