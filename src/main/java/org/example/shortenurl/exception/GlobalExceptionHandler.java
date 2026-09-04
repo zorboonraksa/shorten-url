@@ -44,7 +44,6 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBadRequest(
-            Exception exception,
             HttpServletRequest request
     ) {
         return response(HttpStatus.BAD_REQUEST, "Invalid request", request);
@@ -52,7 +51,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleNotFound(
-            Exception exception,
             HttpServletRequest request
     ) {
         return response(HttpStatus.NOT_FOUND, "Resource not found", request);
@@ -60,7 +58,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiErrorResponse> handleMethodNotAllowed(
-            HttpRequestMethodNotSupportedException exception,
             HttpServletRequest request
     ) {
         return response(HttpStatus.METHOD_NOT_ALLOWED, "Method not allowed", request);

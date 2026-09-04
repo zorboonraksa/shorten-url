@@ -22,7 +22,6 @@ public class DataSourceConfig {
 
     @Bean("ds")
     @Primary
-    @ConfigurationProperties(prefix = "spring.datasource.configuration")
     public DataSource dataSource(
             @Qualifier("dsProperties") DataSourceProperties properties
     ) {

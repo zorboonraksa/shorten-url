@@ -22,18 +22,17 @@ public class UserRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final UserRowMapper rowMapper;
 
-    public User save(User user) {
+    public void save(User user) {
         String sql = """
                 INSERT INTO users (email, password_hash)
                 VALUES (:email, :passwordHash)
-                RETURNING %s
-                """.formatted(USER_COLUMNS);
+                """;
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("email", user.email())
                 .addValue("passwordHash", user.passwordHash());
 
-        return jdbcTemplate.queryForObject(sql, parameters, rowMapper);
+        jdbcTemplate.update(sql, parameters);
     }
 
     public Optional<User> findByEmail(String email) {

@@ -30,10 +30,6 @@ public class ShortenedUrlService {
 
         for (int attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
             String shortCode = generateShortCode();
-            if (shortenedUrlRepository.existsByShortCode(shortCode)) {
-                continue;
-            }
-
             ShortenedUrl shortenedUrl = ShortenedUrl.builder()
                     .userId(userId)
                     .originalUrl(originalUrl)
@@ -42,8 +38,7 @@ public class ShortenedUrlService {
 
             try {
                 return shortenedUrlRepository.save(shortenedUrl);
-            } catch (DuplicateKeyException exception) {
-                // A concurrent request used the same code; generate another one.
+            } catch (DuplicateKeyException _) {
             }
         }
 

@@ -37,23 +37,6 @@ public class ShortenedUrlRepository {
         return jdbcTemplate.queryForObject(sql, parameters, rowMapper);
     }
 
-    public boolean existsByShortCode(String shortCode) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM shortened_urls
-                    WHERE short_code = :shortCode
-                )
-                """;
-
-        Boolean exists = jdbcTemplate.queryForObject(
-                sql,
-                Map.of("shortCode", shortCode),
-                Boolean.class
-        );
-        return Boolean.TRUE.equals(exists);
-    }
-
     public Optional<ShortenedUrl> findByShortCode(String shortCode) {
         String sql = """
                 SELECT %s
