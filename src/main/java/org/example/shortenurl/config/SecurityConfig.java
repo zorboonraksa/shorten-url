@@ -36,7 +36,8 @@ public class SecurityConfig {
                                 "/api/health-check",
                                 "/api/register",
                                 "/api/login",
-                                "/r/**"
+                                "/r/**",
+                                "/error"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
