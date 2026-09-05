@@ -62,7 +62,9 @@ class UrlsControllerTest {
         ResponseEntity<ShortenUrlResponse> response = controller.shorten(request, jwt());
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("http://localhost:8080/r/abc1234", response.getBody().shortUrl());
+        ShortenUrlResponse body = response.getBody();
+        assertNotNull(body);
+        assertEquals("http://localhost:8080/r/abc1234", body.shortUrl());
     }
 
     @Test

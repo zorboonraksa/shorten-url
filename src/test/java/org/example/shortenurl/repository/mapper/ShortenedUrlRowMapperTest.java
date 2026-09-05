@@ -31,8 +31,9 @@ class ShortenedUrlRowMapperTest {
 
         ShortenedUrl result = new ShortenedUrlRowMapper().mapRow(resultSet, 0);
 
-        assertEquals(10L, result.id());
-        assertEquals(7L, result.userId());
+        assert result != null;
+        assertEquals(Long.valueOf(10L), result.id());
+        assertEquals(Long.valueOf(7L), result.userId());
         assertEquals("https://example.com", result.originalUrl());
         assertEquals("abc1234", result.shortCode());
         assertEquals(CREATED_AT, result.createdAt());

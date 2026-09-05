@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -28,7 +30,11 @@ class SecurityConfigTest {
         MockHttpServletRequest request = request("/api/urls");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        entryPoint.commence(request, response, null);
+        entryPoint.commence(
+                request,
+                response,
+                new BadCredentialsException("Authentication required")
+        );
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatus());
         assertEquals("application/json", response.getContentType());
@@ -39,10 +45,10 @@ class SecurityConfigTest {
     @Test
     void accessDeniedHandlerWritesJsonForbiddenResponse() throws Exception {
         AccessDeniedHandler handler = config.accessDeniedHandler(objectMapper);
-        MockHttpServletRequest request = request("/api/urls");
+        MockHttpServletRequest request = request("/api/shorten");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        handler.handle(request, response, null);
+        handler.handle(request, response, new AccessDeniedException("Access denied"));
 
         assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus());
         assertEquals("application/json", response.getContentType());

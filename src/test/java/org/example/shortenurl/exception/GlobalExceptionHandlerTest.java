@@ -3,6 +3,7 @@ package org.example.shortenurl.exception;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 class GlobalExceptionHandlerTest {
 
@@ -60,7 +62,7 @@ class GlobalExceptionHandlerTest {
         ));
 
         ResponseEntity<ApiErrorResponse> response = handler.handleValidation(
-                new MethodArgumentNotValidException(null, bindingResult),
+                new MethodArgumentNotValidException(mock(MethodParameter.class), bindingResult),
                 request("/api/register")
         );
 
@@ -73,7 +75,7 @@ class GlobalExceptionHandlerTest {
                 new BeanPropertyBindingResult(new Object(), "request");
 
         ResponseEntity<ApiErrorResponse> response = handler.handleValidation(
-                new MethodArgumentNotValidException(null, bindingResult),
+                new MethodArgumentNotValidException(mock(MethodParameter.class), bindingResult),
                 request("/api/register")
         );
 

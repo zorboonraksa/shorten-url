@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.boot.SpringApplication;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mockStatic;
 
 class ShortenUrlApplicationTests {
 
     @Test
     void applicationCanBeConstructed() {
-        assertNotNull(new ShortenUrlApplication());
+        assertDoesNotThrow(ShortenUrlApplication::new);
     }
 
     @Test

@@ -13,8 +13,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JwtServiceTest {
@@ -46,7 +48,11 @@ class JwtServiceTest {
         assertEquals(3600L, response.expiresIn());
         assertEquals("7", jwt.getSubject());
         assertEquals("user@example.com", jwt.getClaimAsString("email"));
-        assertTrue(jwt.getExpiresAt().isAfter(jwt.getIssuedAt()));
-        assertEquals(3600L, Duration.between(jwt.getIssuedAt(), jwt.getExpiresAt()).getSeconds());
+        Instant issuedAt = jwt.getIssuedAt();
+        Instant expiresAt = jwt.getExpiresAt();
+        assertNotNull(issuedAt);
+        assertNotNull(expiresAt);
+        assertTrue(expiresAt.isAfter(issuedAt));
+        assertEquals(3600L, Duration.between(issuedAt, expiresAt).getSeconds());
     }
 }

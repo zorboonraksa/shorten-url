@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -82,7 +83,10 @@ public class UrlsController {
     }
 
     private Long userId(Jwt jwt) {
-        return Long.valueOf(jwt.getSubject());
+        return Long.valueOf(Objects.requireNonNull(
+                jwt.getSubject(),
+                "JWT subject is required"
+        ));
     }
 
     private void logRequestStarted(String operation, Long userId) {

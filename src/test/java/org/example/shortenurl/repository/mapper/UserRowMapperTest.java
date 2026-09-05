@@ -30,7 +30,8 @@ class UserRowMapperTest {
 
         User result = new UserRowMapper().mapRow(resultSet, 0);
 
-        assertEquals(7L, result.id());
+        assert result != null;
+        assertEquals(Long.valueOf(7L), result.id());
         assertEquals("user@example.com", result.email());
         assertEquals("password-hash", result.passwordHash());
         assertEquals(CREATED_AT, result.createdAt());
