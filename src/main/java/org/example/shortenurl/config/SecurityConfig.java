@@ -3,10 +3,12 @@ package org.example.shortenurl.config;
 import java.io.IOException;
 import java.util.Base64;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.shortenurl.exception.ApiErrorResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import tools.jackson.databind.ObjectMapper;
 
 @Configuration
+@Slf4j
 public class SecurityConfig {
 
     @Bean
@@ -65,10 +68,10 @@ public class SecurityConfig {
     AuthenticationEntryPoint authenticationEntryPoint(ObjectMapper objectMapper) {
         return (request, response, _) -> writeError(
                 objectMapper,
+                request,
                 response,
                 HttpStatus.UNAUTHORIZED,
-                "Authentication required",
-                request.getRequestURI()
+                "Authentication required"
         );
     }
 
@@ -76,10 +79,10 @@ public class SecurityConfig {
     AccessDeniedHandler accessDeniedHandler(ObjectMapper objectMapper) {
         return (request, response, _) -> writeError(
                 objectMapper,
+                request,
                 response,
                 HttpStatus.FORBIDDEN,
-                "Access denied",
-                request.getRequestURI()
+                "Access denied"
         );
     }
 
@@ -113,16 +116,23 @@ public class SecurityConfig {
 
     private void writeError(
             ObjectMapper objectMapper,
+            HttpServletRequest request,
             HttpServletResponse response,
             HttpStatus status,
-            String message,
-            String path
+            String message
     ) throws IOException {
+        log.warn(
+                "Security response method={} path={} status={} message={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                status.value(),
+                message
+        );
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(
                 response.getOutputStream(),
-                ApiErrorResponse.of(status, message, path)
+                ApiErrorResponse.of(status, message, request.getRequestURI())
         );
     }
 }

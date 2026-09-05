@@ -2,6 +2,7 @@ package org.example.shortenurl.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .findFirst()
-                .map(fieldError -> fieldError.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .orElse("Request validation failed");
 
         return response(HttpStatus.BAD_REQUEST, message, request);
@@ -68,7 +69,12 @@ public class GlobalExceptionHandler {
             Exception exception,
             HttpServletRequest request
     ) {
-        log.error("Unhandled exception", exception);
+        log.error(
+                "Unhandled exception method={} path={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                exception
+        );
         return response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", request);
     }
 
@@ -77,7 +83,23 @@ public class GlobalExceptionHandler {
             String message,
             HttpServletRequest request
     ) {
+        logErrorResponse(status, message, request);
+
         return ResponseEntity.status(status)
                 .body(ApiErrorResponse.of(status, message, request.getRequestURI()));
+    }
+
+    private void logErrorResponse(
+            HttpStatus status,
+            String message,
+            HttpServletRequest request
+    ) {
+        log.warn(
+                "Error response method={} path={} status={} message={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                status.value(),
+                message
+        );
     }
 }

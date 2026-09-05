@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.shortenurl.exception.ApiException;
 import org.example.shortenurl.model.ShortenedUrl;
 import org.example.shortenurl.repository.ShortenedUrlRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ShortenedUrlService {
 
@@ -39,9 +41,19 @@ public class ShortenedUrlService {
             try {
                 return shortenedUrlRepository.save(shortenedUrl);
             } catch (DuplicateKeyException _) {
+                log.debug(
+                        "Short code collision attempt={} shortCode={}",
+                        attempt + 1,
+                        shortCode
+                );
             }
         }
 
+        log.error(
+                "Short URL generation failed userId={} attempts={}",
+                userId,
+                MAX_GENERATION_ATTEMPTS
+        );
         throw new ApiException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Unable to generate short URL"
@@ -49,13 +61,12 @@ public class ShortenedUrlService {
     }
 
     public URI getRedirectUri(String shortCode) {
-        return shortenedUrlRepository.findByShortCode(shortCode)
-                .map(ShortenedUrl::originalUrl)
-                .map(URI::create)
+        ShortenedUrl shortenedUrl = shortenedUrlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new ApiException(
                         HttpStatus.NOT_FOUND,
                         "Short URL not found"
                 ));
+        return URI.create(shortenedUrl.originalUrl());
     }
 
     public List<ShortenedUrl> findAllByUserId(Long userId) {
@@ -80,7 +91,7 @@ public class ShortenedUrlService {
                     || !(scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
                 throw invalidUrl();
             }
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException _) {
             throw invalidUrl();
         }
     }

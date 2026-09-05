@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.shortenurl.dtos.ShortenUrlRequest;
 import org.example.shortenurl.dtos.ShortenUrlResponse;
 import org.example.shortenurl.dtos.UrlResponse;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class UrlsController {
 
     private final ShortenedUrlService shortenedUrlService;
@@ -34,20 +36,27 @@ public class UrlsController {
             @Valid @RequestBody ShortenUrlRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
+        Long userId = userId(jwt);
+        logRequestStarted("shorten", userId);
         ShortenedUrl shortenedUrl = shortenedUrlService.shorten(
-                userId(jwt),
+                userId,
                 request.originalUrl()
         );
 
+        logRequestCompleted("shorten", userId, HttpStatus.CREATED);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ShortenUrlResponse(shortUrl(shortenedUrl.shortCode())));
     }
 
     @GetMapping("/urls")
     public List<UrlResponse> getUrls(@AuthenticationPrincipal Jwt jwt) {
-        return shortenedUrlService.findAllByUserId(userId(jwt)).stream()
+        Long userId = userId(jwt);
+        logRequestStarted("list", userId);
+        List<UrlResponse> urls = shortenedUrlService.findAllByUserId(userId).stream()
                 .map(this::toResponse)
                 .toList();
+        logRequestCompleted("list", userId, HttpStatus.OK);
+        return urls;
     }
 
     @DeleteMapping("/urls/{id}")
@@ -55,7 +64,10 @@ public class UrlsController {
             @PathVariable Long id,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        shortenedUrlService.delete(id, userId(jwt));
+        Long userId = userId(jwt);
+        logRequestStarted("delete", userId);
+        shortenedUrlService.delete(id, userId);
+        logRequestCompleted("delete", userId, HttpStatus.NO_CONTENT);
         return ResponseEntity.noContent().build();
     }
 
@@ -77,5 +89,18 @@ public class UrlsController {
 
     private Long userId(Jwt jwt) {
         return Long.valueOf(jwt.getSubject());
+    }
+
+    private void logRequestStarted(String operation, Long userId) {
+        log.info("URL request started operation={} userId={}", operation, userId);
+    }
+
+    private void logRequestCompleted(String operation, Long userId, HttpStatus status) {
+        log.info(
+                "URL request completed operation={} userId={} status={}",
+                operation,
+                userId,
+                status.value()
+        );
     }
 }
