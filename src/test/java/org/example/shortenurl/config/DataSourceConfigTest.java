@@ -26,7 +26,7 @@ class DataSourceConfigTest {
         DataSourceBuilder<?> builder = mock(DataSourceBuilder.class);
         DataSource dataSource = mock(DataSource.class);
         doReturn(builder).when(properties).initializeDataSourceBuilder();
-        when(builder.build()).thenReturn(dataSource);
+        doReturn(dataSource).when(builder).build();
 
         assertSame(dataSource, config.dataSource(properties));
     }
