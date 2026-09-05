@@ -1,7 +1,5 @@
 package org.example.shortenurl.service;
 
-import java.util.Locale;
-
 import lombok.RequiredArgsConstructor;
 import org.example.shortenurl.dtos.AuthRequest;
 import org.example.shortenurl.dtos.LoginResponse;
@@ -12,6 +10,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class AuthService {
 
         try {
             userRepository.save(user);
-        } catch (DuplicateKeyException exception) {
+        } catch (DuplicateKeyException _) {
             throw emailAlreadyExists();
         }
     }

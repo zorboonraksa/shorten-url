@@ -1,15 +1,15 @@
 package org.example.shortenurl.repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import org.example.shortenurl.model.ShortenedUrl;
 import org.example.shortenurl.repository.mapper.ShortenedUrlRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,6 +18,8 @@ public class ShortenedUrlRepository {
     private static final String SHORTENED_URL_COLUMNS = """
             id, user_id, original_url, short_code, created_at
             """;
+
+    private static final String USER_ID = "userId";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final ShortenedUrlRowMapper rowMapper;
@@ -30,7 +32,7 @@ public class ShortenedUrlRepository {
                 """.formatted(SHORTENED_URL_COLUMNS);
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("userId", shortenedUrl.userId())
+                .addValue(USER_ID, shortenedUrl.userId())
                 .addValue("originalUrl", shortenedUrl.originalUrl())
                 .addValue("shortCode", shortenedUrl.shortCode());
 
@@ -59,7 +61,7 @@ public class ShortenedUrlRepository {
                 ORDER BY created_at DESC
                 """.formatted(SHORTENED_URL_COLUMNS);
 
-        return jdbcTemplate.query(sql, Map.of("userId", userId), rowMapper);
+        return jdbcTemplate.query(sql, Map.of(USER_ID, userId), rowMapper);
     }
 
     public int deleteByIdAndUserId(Long id, Long userId) {
@@ -71,7 +73,7 @@ public class ShortenedUrlRepository {
 
         return jdbcTemplate.update(sql, Map.of(
                 "id", id,
-                "userId", userId
+                USER_ID, userId
         ));
     }
 

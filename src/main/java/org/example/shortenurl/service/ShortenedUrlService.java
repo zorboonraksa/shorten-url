@@ -1,9 +1,5 @@
 package org.example.shortenurl.service;
 
-import java.net.URI;
-import java.security.SecureRandom;
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shortenurl.exception.ApiException;
@@ -12,6 +8,10 @@ import org.example.shortenurl.repository.ShortenedUrlRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.net.URI;
+import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @Slf4j

@@ -1,15 +1,15 @@
 package org.example.shortenurl.repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import org.example.shortenurl.model.User;
 import org.example.shortenurl.repository.mapper.UserRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,6 +18,8 @@ public class UserRepository {
     private static final String USER_COLUMNS = """
             id, email, password_hash, created_at
             """;
+
+    private static final String EMAIL = "email";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final UserRowMapper rowMapper;
@@ -29,7 +31,7 @@ public class UserRepository {
                 """;
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("email", user.email())
+                .addValue(EMAIL, user.email())
                 .addValue("passwordHash", user.passwordHash());
 
         jdbcTemplate.update(sql, parameters);
@@ -42,7 +44,7 @@ public class UserRepository {
                 WHERE email = :email
                 """.formatted(USER_COLUMNS);
 
-        return firstOrEmpty(jdbcTemplate.query(sql, Map.of("email", email), rowMapper));
+        return firstOrEmpty(jdbcTemplate.query(sql, Map.of(EMAIL, email), rowMapper));
     }
 
     public boolean existsByEmail(String email) {
@@ -56,7 +58,7 @@ public class UserRepository {
 
         Boolean exists = jdbcTemplate.queryForObject(
                 sql,
-                Map.of("email", email),
+                Map.of(EMAIL, email),
                 Boolean.class
         );
         return Boolean.TRUE.equals(exists);

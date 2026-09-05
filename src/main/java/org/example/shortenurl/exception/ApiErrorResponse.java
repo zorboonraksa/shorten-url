@@ -1,8 +1,8 @@
 package org.example.shortenurl.exception;
 
-import java.time.Instant;
-
 import org.springframework.http.HttpStatus;
+
+import java.time.Instant;
 
 public record ApiErrorResponse(
         Instant timestamp,

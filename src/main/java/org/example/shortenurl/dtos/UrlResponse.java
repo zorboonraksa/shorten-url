@@ -1,8 +1,8 @@
 package org.example.shortenurl.dtos;
 
-import java.time.Instant;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.Instant;
 
 public record UrlResponse(
         Long id,
